@@ -1,0 +1,92 @@
+name: Build image
+
+on:
+  push:
+    branches:
+      - fork
+    paths:
+      - "**/*.go"
+      - "Dockerfile"
+      - "!.dockerignore"
+      - "!.gitattributes"
+      - "!.gitignore"
+      - "!config.yml"
+      - "!LICENSE"
+      - "!*.md"
+      - "Makefile"
+      - "package.json"
+  workflow_call: 
+    secrets: 
+      GHA_PACKAGES:
+        required: true
+    inputs: 
+      ref:
+        type: string
+        default: "fork"
+  workflow_dispatch:
+
+
+defaults:
+  run:
+    shell: bash
+
+
+env:
+  PACKAGE_NAME: opengist
+
+
+jobs:
+  check:
+    uses: ./.github/workflows/go.yml
+  
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with: 
+          fetch-depth: 0
+          ref: ${{ inputs.ref || 'fork' }}
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHA_PACKAGES }}
+
+      - name: Setup
+        id: env-setup
+        run: |
+          build_image_tag=ghcr.io/${{ github.repository_owner }}/${{ env.PACKAGE_NAME }}:nightly
+          build_image_tag=$(echo $build_image_tag | tr '[:upper:]' '[:lower:]')
+          echo "build_image_tag=$build_image_tag" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.env-setup.outputs.build_image_tag }}
+
+  clean:
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Delete untagged images
+        uses: Chizkiyahu/delete-untagged-ghcr-action@v5
+        with:
+          repository_owner: ${{ github.repository_owner }}
+          token: ${{ secrets.GHA_PACKAGES }}
+          package_name: ${{ env.PACKAGE_NAME }}
+          untagged_only: true
+          owner_type: ${{ github.event.organization && 'org' || 'user' }}
+        continue-on-error: true
