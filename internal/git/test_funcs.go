@@ -53,7 +53,7 @@ func CommitToBare(t *testing.T, user string, gist string, files map[string]strin
 		}
 	}
 
-	if err := CommitRepository(gist, user, "thomas@mail.com"); err != nil {
+	if err := CommitRepository(gist, user); err != nil {
 		require.NoError(t, err, "Could not commit to repository")
 	}
 

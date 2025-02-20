@@ -478,7 +478,7 @@ func (gist *Gist) AddAndCommitFiles(files *[]FileDTO) error {
 		return err
 	}
 
-	if err := git.CommitRepository(gist.Uuid, gist.User.Username, gist.User.Email); err != nil {
+	if err := git.CommitRepository(gist.Uuid, gist.User.Username); err != nil {
 		return err
 	}
 
@@ -498,7 +498,7 @@ func (gist *Gist) AddAndCommitFile(file *FileDTO) error {
 		return err
 	}
 
-	if err := git.CommitRepository(gist.Uuid, gist.User.Username, gist.User.Email); err != nil {
+	if err := git.CommitRepository(gist.Uuid, gist.User.Username); err != nil {
 		return err
 	}
 

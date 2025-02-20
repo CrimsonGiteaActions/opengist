@@ -106,7 +106,7 @@ like Opengist actually`,
 	require.Regexp(t, "[a-f0-9]{40}", commits[0].Hash, "Commit ID is not correct")
 	require.Regexp(t, "[0-9]{10}", commits[0].Timestamp, "Commit timestamp is not correct")
 	require.Equal(t, "thomas", commits[0].AuthorName, "Commit author name is not correct")
-	require.Equal(t, "thomas@mail.com", commits[0].AuthorEmail, "Commit author email is not correct")
+	require.Equal(t, "", commits[0].AuthorEmail, "Commit author email is not correct")
 	require.Equal(t, "4 files changed, 2 insertions, 2 deletions", commits[0].Changed, "Commit author name is not correct")
 
 	require.Contains(t, commits[0].Files, File{

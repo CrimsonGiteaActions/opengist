@@ -398,14 +398,14 @@ func AddAll(gistTmpId string) error {
 	return cmd.Run()
 }
 
-func CommitRepository(gistTmpId string, authorName string, authorEmail string) error {
+func CommitRepository(gistTmpId string, authorName string) error {
 	cmd := exec.Command("git",
 		"commit",
 		"--allow-empty",
 		"-m",
 		"Opengist commit",
 		"--author",
-		fmt.Sprintf("%s <%s>", authorName, authorEmail),
+		fmt.Sprintf("%s <>", authorName),
 	)
 	tmpPath := TmpRepositoryPath(gistTmpId)
 	cmd.Dir = tmpPath
