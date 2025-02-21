@@ -102,6 +102,7 @@ func (ctx *Context) GetSession() *sessions.Session {
 }
 
 func (ctx *Context) SaveSession(sess *sessions.Session) {
+	sess.Options.Secure = true
 	_ = sess.Save(ctx.Request(), ctx.Response())
 }
 
@@ -114,6 +115,7 @@ func (ctx *Context) DeleteSession() {
 func (ctx *Context) AddFlash(flashMessage string, flashType string) {
 	sess, _ := ctx.store.flashStore.Get(ctx.Request(), "flash")
 	sess.AddFlash(flashMessage, flashType)
+	sess.Options.Secure = true
 	_ = sess.Save(ctx.Request(), ctx.Response())
 }
 

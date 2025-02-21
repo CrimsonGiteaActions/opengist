@@ -58,6 +58,7 @@ func (s *Server) registerMiddlewares() {
 			TokenLookup:    "form:_csrf,header:X-CSRF-Token",
 			CookiePath:     "/",
 			CookieHTTPOnly: true,
+			CookieSecure:   true,
 			CookieSameSite: http.SameSiteStrictMode,
 			Skipper: func(ctx echo.Context) bool {
 				/* skip CSRF for embeds */
